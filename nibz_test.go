@@ -1,6 +1,9 @@
 package nibz
 
-import "testing"
+import (
+	"encoding/binary"
+	"testing"
+)
 
 func TestSort(t *testing.T) {
 
@@ -47,4 +50,60 @@ func TestRoundtrip(t *testing.T) {
 			}
 		}
 	}
+}
+
+var sink byte
+
+func BenchmarkCompress(b *testing.B) {
+
+	var data [4]byte
+
+	var x uint64 = 1
+
+	for i := 0; i < b.N; i++ {
+		x = xorshiftMult64(x)
+		binary.LittleEndian.PutUint32(data[:], uint32(x))
+		data[0] = byte(x) & 0x1f
+		data[1] = byte(x>>5) & 0x1f
+		data[2] = byte(x>>10) & 0x1f
+		data[3] = byte(x>>15) & 0x1f
+		c, _ := Compress(data)
+		sink += byte(c)
+	}
+}
+
+func BenchmarkDecompress(b *testing.B) {
+
+	var data [4]byte
+
+	var x uint64 = 1
+
+	for i := 0; i < b.N; i++ {
+		x = xorshiftMult64(x)
+		binary.LittleEndian.PutUint32(data[:], uint32(x))
+		data, _ := Decompress(uint16(x))
+		sink += data[0]
+	}
+}
+
+func BenchmarkSort(b *testing.B) {
+
+	var data [4]byte
+
+	var x uint64 = 1
+
+	for i := 0; i < b.N; i++ {
+		x = xorshiftMult64(x)
+		binary.LittleEndian.PutUint32(data[:], uint32(x))
+		sort(&data)
+		sink += data[0]
+	}
+}
+
+// 64-bit xorshift multiply rng from http://vigna.di.unimi.it/ftp/papers/xorshift.pdf
+func xorshiftMult64(x uint64) uint64 {
+	x ^= x >> 12 // a
+	x ^= x << 25 // b
+	x ^= x >> 27 // c
+	return x * 2685821657736338717
 }
