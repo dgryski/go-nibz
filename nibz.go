@@ -27,22 +27,24 @@ func init() {
 	}
 }
 
-func sort(data *[4]byte) {
-	if data[0] < data[1] {
-		data[0], data[1] = data[1], data[0]
+func sort(a, b, c, d byte) (byte, byte, byte, byte) {
+	if a < b {
+		a, b = b, a
 	}
-	if data[2] < data[3] {
-		data[2], data[3] = data[3], data[2]
+	if c < d {
+		c, d = d, c
 	}
-	if data[0] < data[2] {
-		data[0], data[2] = data[2], data[0]
+	if a < c {
+		a, c = c, a
 	}
-	if data[1] < data[3] {
-		data[1], data[3] = data[3], data[1]
+	if b < d {
+		b, d = d, b
 	}
-	if data[1] < data[2] {
-		data[1], data[2] = data[2], data[1]
+	if b < c {
+		b, c = c, b
 	}
+
+	return a, b, c, d
 }
 
 var errValueTooLarge = errors.New("nibz: value too large")
@@ -55,10 +57,10 @@ func Compress(data [4]byte) (uint16, error) {
 		}
 	}
 
-	sort(&data)
+	a, b, c, d := sort(data[0], data[1], data[2], data[3])
 
-	sorted := uint16(data[0]>>1)<<(0*4) | uint16(data[1]>>1)<<(1*4) | uint16(data[2]>>1)<<(2*4) | uint16(data[3]>>1)<<(3*4)
-	code := uint16(lookupFwd[sorted])<<4 | uint16(data[0]&1)<<0 | uint16(data[1]&1)<<1 | uint16(data[2]&1)<<2 | uint16(data[3]&1)<<3
+	sorted := uint16(a>>1)<<(0*4) | uint16(b>>1)<<(1*4) | uint16(c>>1)<<(2*4) | uint16(d>>1)<<(3*4)
+	code := uint16(lookupFwd[sorted])<<4 | uint16(a&1)<<0 | uint16(b&1)<<1 | uint16(c&1)<<2 | uint16(d&1)<<3
 
 	return code, nil
 }

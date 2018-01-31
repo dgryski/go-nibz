@@ -13,9 +13,10 @@ func TestSort(t *testing.T) {
 		for j := 0; j < max; j++ {
 			for k := 0; k < max; k++ {
 				for l := 0; l < max; l++ {
-					var data = [4]byte{byte(i), byte(j), byte(k), byte(l)}
 
-					sort(&data)
+					a, b, c, d := sort(byte(i), byte(j), byte(k), byte(l))
+
+					data := [4]byte{a, b, c, d}
 
 					var prev byte = 255
 					for _, v := range data[:] {
@@ -95,8 +96,8 @@ func BenchmarkSort(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		x = xorshiftMult64(x)
 		binary.LittleEndian.PutUint32(data[:], uint32(x))
-		sort(&data)
-		sink += data[0]
+		a, _, _, _ := sort(data[0], data[1], data[2], data[3])
+		sink += a
 	}
 }
 
