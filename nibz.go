@@ -27,15 +27,21 @@ func init() {
 	}
 }
 
-// 4 element sorting network
-var sortingNetwork = [5][2]int{{0, 1}, {2, 3}, {0, 2}, {1, 3}, {1, 2}}
-
 func sort(data *[4]byte) {
-	for _, v := range sortingNetwork[:] {
-		i, j := v[0], v[1]
-		if data[i] < data[j] {
-			data[i], data[j] = data[j], data[i]
-		}
+	if data[0] < data[1] {
+		data[0], data[1] = data[1], data[0]
+	}
+	if data[2] < data[3] {
+		data[2], data[3] = data[3], data[2]
+	}
+	if data[0] < data[2] {
+		data[0], data[2] = data[2], data[0]
+	}
+	if data[1] < data[3] {
+		data[1], data[3] = data[3], data[1]
+	}
+	if data[1] < data[2] {
+		data[1], data[2] = data[2], data[1]
 	}
 }
 
